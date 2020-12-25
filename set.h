@@ -24,8 +24,23 @@ class set {
         insert(q->value);
         insert_branch(q->left);
         insert_branch(q->right);
-        delete q;
         return;
+    }
+
+    void subtraction(node* q) {
+        if(!q)
+            return;
+        remove(q->value);
+        subtraction(q->left);
+        subtraction(q->right);
+    }
+
+    void copy(node* q) {
+        if(!q)
+            return;
+        insert(q->value);
+        copy(q->left);
+        copy(q->right);
     }
 
 public:
@@ -34,13 +49,50 @@ public:
         size = 0;
     }
 
-    bool empty() {
+    set(const set& a) {
+        clear();
+        copy(a.first);
+    }
+
+    bool empty() const {
         if(first)
             return 0;
         return 1;
     }
 
-    void insert(int a) {
+    set operator=(const set& a) {
+        clear();
+        copy(a.first);
+        return (*this);
+    }
+
+    set& operator+=(const set& a) {
+        copy(a.first);
+        return (*this);
+    }
+
+    set operator+(const set& a) {
+        set b(*this);        
+        return (b+=a);
+    }
+
+    set& operator-=(const set& a) {
+        subtraction(a.first);
+        return (*this);
+    }
+
+    set operator-(const set& a) {
+        set b(*this);
+        return (b-=a);
+    }
+
+    void clear() {
+        first = NULL;
+        size = 0;
+        return;
+    }
+
+    void insert(const int a) {
         node* q = new node(a);
         ++size;
         if(empty()) {
@@ -67,7 +119,7 @@ public:
         }
     }
 
-    bool exist(int a) {
+    bool exist(int a) const {
         if(empty())
             return 0;
         node* q = first;
@@ -96,8 +148,7 @@ public:
         if(first->value == a) {
             --size;
             first = first->left;
-            insert_branch(first->right);
-            delete q;
+            insert_branch(q->right);
             return;
         }
 
@@ -110,7 +161,6 @@ public:
                 node* g = q->left;
                 q->left = g->left;
                 insert_branch(g->right);
-                delete g;
                 return;
             }
 
@@ -119,7 +169,6 @@ public:
                 node* g = q->right;
                 q->right = g->left;
                 insert_branch(g->right);
-                delete g;
                 return;
             }
 
@@ -132,7 +181,7 @@ public:
         }
     }
 
-    int member_count() {
+    int member_count() const {
         return size;
     }
 };
